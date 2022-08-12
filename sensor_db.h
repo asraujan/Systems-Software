@@ -14,6 +14,7 @@
 #include <string.h>
 #include "config.h"
 #include <sqlite3.h>
+#include "sbuffer.h"
 
 // stringify preprocessor directives using 2-level preprocessor magic
 // this avoids using directives like -DDB_NAME=\"some_db_name\"
@@ -38,13 +39,13 @@ typedef int (*callback_t)(void *, int, char **, char **);
  * \param clear_up_flag if the table existed, clear up the existing data when clear_up_flag is set to 1
  * \return the connection for success, NULL if an error occurs
  */
-DBCONN *init_connection(char clear_up_flag);
+DBCONN *init_connection(char clear_up_flag, sbuffer_t *sbuffer);
 
 /**
  * Disconnect from the database server
  * \param conn pointer to the current connection
  */
-void disconnect(DBCONN *conn);
+void disconnect(DBCONN *conn, sbuffer_t *buffer);
 
 /**
  * Write an INSERT query to insert a single sensor measurement
@@ -62,7 +63,7 @@ int insert_sensor(DBCONN *conn, sensor_id_t id, sensor_value_t value, sensor_ts_
  * \param sensor_data a file pointer to binary file containing sensor data
  * \return zero for success, and non-zero if an error occurs
  */
-int insert_sensor_from_file(DBCONN *conn, FILE *sensor_data);
+int insert_sensor_from_file(DBCONN *conn, sbuffer_t ** sbuffer);
 
 /**
   * Write a SELECT query to select all sensor measurements in the table 

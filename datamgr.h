@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "config.h"
+#include "sbuffer.h"
+#include "lib/dplist.h"
 
 #ifndef RUN_AVG_LENGTH
 #define RUN_AVG_LENGTH 5
@@ -43,7 +45,7 @@ typedef struct element element_t;
  *  \param fp_sensor_map file pointer to the map file
  *  \param fp_sensor_data file pointer to the binary data file
  */
-void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data);
+void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t ** sbuffer);
 
 /**
  * This method should be called to clean up the datamgr, and to free all used memory. 
