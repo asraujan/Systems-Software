@@ -6,9 +6,11 @@
 #define _TCPSOCK_H
 
 #include <stdlib.h>
+#include <assert.h>
 #include <stdio.h>
 #include "config.h"
 #include <poll.h>
+#include "sbuffer.h"
 
 #ifndef TIMEOUT
 #error TIMEOUT not set
@@ -32,7 +34,7 @@ typedef struct pollfd    fds_t;
  if connections empty, wait for TIMEOUT, terminate conmgr
  define TIMEOUT at compilation
  connection manager starts up a command line argument to define the port number for incoming connections. */
-void connmgr_listen(int port_number);
+void connmgr_listen(int port_number, sbuffer_t ** sbuffer);
 
 //This method should be called to clean up the connmgr, and to free all used memory. After this no new connections will be accepted
 void connmgr_free();

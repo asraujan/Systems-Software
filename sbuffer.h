@@ -11,6 +11,31 @@
 #define SBUFFER_SUCCESS 0
 #define SBUFFER_NO_DATA 1
 
+/**
+ * basic node for the buffer, these nodes are linked together to create the buffer
+ */
+
+struct sbuffer_node
+{
+    struct sbuffer_node *next; /**< a pointer to the next node*/
+    sensor_data_t data;        /**< a structure containing the data */
+    int read_flag[READERS];    // index 0 is datamgr and 1 is storagemgr
+};
+
+typedef struct sbuffer_node sbuffer_node_t;
+
+/**
+ * a structure to keep track of the buffer
+ */
+struct sbuffer
+{
+    sbuffer_node_t *head; /**< a pointer to the first node in the buffer */
+    sbuffer_node_t *tail; /**< a pointer to the last node in the buffer */
+    pthread_mutex_t *lock;
+    pthread_mutex_t *fifo_lock;
+    pthread_cond_t *signal;
+};
+
 typedef struct sbuffer sbuffer_t;
 
 /**
@@ -41,7 +66,30 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data);
  * \param buffer a pointer to the buffer that is used
  * \param data a pointer to sensor_data_t data, that will be copied into the buffer
  * \return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occured
-*/
+ */
 int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data);
 
-#endif  //_SBUFFER_H_
+/**
+ * @brief Read the data present on the shared buffer.
+ * @param buffer a pointer to the buffer that is used
+ * @param data a pointer to sensor_data_t data, that will be returned containing the read data.
+ * @param thread the ID of the particular thread used defined in config.h
+ * @return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occured, SBUFFER_NO_DATA if sbuffer empty
+ */
+int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int thread);
+
+/**
+ * @brief Check if read by all read threads
+ * \param buffer pointer to buffer used
+ * \param node  node to be check for reads
+ * \return 1 if completely read else 0
+ */
+int sbuffer_reader_count(sbuffer_node_t *node);
+
+/**
+ * @brief write to fifo pipe
+ * 
+ */
+void sbuffer_write_fifo(sbuffer_t *buffer, int * pfds, char *msg_buff);
+
+#endif //_SBUFFER_H_
